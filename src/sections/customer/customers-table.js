@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { format } from 'date-fns';
+import { format ,differenceInSeconds, parseISO} from 'date-fns';
 import {
   Avatar,
   Box,
@@ -17,6 +17,7 @@ import {
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
 import React, { useEffect, useState } from 'react';
+
 
 export const CustomersTable = (props) => {
   const {
@@ -111,7 +112,7 @@ export const CustomersTable = (props) => {
                   Reply Timestamp
                 </TableCell>
                 <TableCell>
-                  Time Difference
+                  Time Difference (in seconds)
                 </TableCell>
                 <TableCell>
                   Comments
@@ -121,8 +122,12 @@ export const CustomersTable = (props) => {
             <TableBody>
               {items.map((customer) => {
                 const isSelected = selected.includes(customer.id);
-                //const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
-
+                const createdAt = format(parseISO(customer.send_timestamp), 'hh:mm a')
+                const replyAt = format(parseISO(customer.reply_timestamp), 'hh:mm a')
+                const sendTimestamp = parseISO(customer.send_timestamp);
+                const replyTimestamp = parseISO(customer.reply_timestamp);
+// Calculate the difference in seconds
+                const timeDifferenceInSeconds = differenceInSeconds(replyTimestamp, sendTimestamp);
                 return (
                   <TableRow
                     hover
@@ -162,13 +167,15 @@ export const CustomersTable = (props) => {
                       {customer.attending_person_name}
                     </TableCell>
                     <TableCell>
-                      {customer.send_timestamp}
+                      {/* {customer.send_timestamp} */}
+                      {createdAt}
                     </TableCell>
                     <TableCell>
-                      {customer.reply_timestamp}
+                      {replyAt}
+                      
                     </TableCell>
                     <TableCell>
-                      {customer.send_timestamp - customer.reply_timestamp}
+                      {timeDifferenceInSeconds}
                     </TableCell>
                     <TableCell>
                       {customer.admin_comments}
