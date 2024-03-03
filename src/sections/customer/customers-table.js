@@ -70,6 +70,9 @@ export const CustomersTable = (props) => {
                 <TableCell>
                   Signed Up
                 </TableCell>
+                <TableCell>
+                  Comments
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
