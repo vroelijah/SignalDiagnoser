@@ -16,11 +16,12 @@ import {
 } from '@mui/material';
 import { Scrollbar } from 'src/components/scrollbar';
 import { getInitials } from 'src/utils/get-initials';
+import React, { useEffect, useState } from 'react';
 
 export const CustomersTable = (props) => {
   const {
     count = 0,
-    items = [],
+    //items = [],
     onDeselectAll,
     onDeselectOne,
     onPageChange = () => {},
@@ -32,6 +33,32 @@ export const CustomersTable = (props) => {
     selected = []
   } = props;
 
+  
+  const [items, setItems] = useState([]);
+
+  // NEW: State for loading and error handling (optional)
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // Fetch data from server
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        console.log('Fetching data...');
+        const response = await fetch('http://localhost:3001/data');  // Make sure the port and endpoint match your server setup
+        if (!response.ok) throw new Error('Data fetch failed');
+        const data = await response.json();
+        setItems(data);  // Assuming the data structure matches your state
+        setIsLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);  // Empty dependency array means this effect runs once after the initial render
   const selectedSome = (selected.length > 0) && (selected.length < items.length);
   const selectedAll = (items.length > 0) && (selected.length === items.length);
 
@@ -56,19 +83,35 @@ export const CustomersTable = (props) => {
                   />
                 </TableCell>
                 <TableCell>
-                  Name
+                  Patient Name
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   Email
+                </TableCell> 
+                 patient_name TEXT,
+                room_number TEXT, 
+                attending_person_name TEXT,
+                audio_id TEXT,
+                audio_label TEXT,
+                send_timestamp DATETIME,
+                reply_timestamp DATETIME,
+                admin_comments TEXT,
+                message_id INTEGER
+                */}
+                <TableCell>
+                  Room Number
                 </TableCell>
                 <TableCell>
-                  Location
+                  Attending Person Name
                 </TableCell>
                 <TableCell>
-                  Phone
+                  Send Timestamp
                 </TableCell>
                 <TableCell>
-                  Signed Up
+                  Reply Timestamp
+                </TableCell>
+                <TableCell>
+                  Time Difference
                 </TableCell>
                 <TableCell>
                   Comments
@@ -78,7 +121,7 @@ export const CustomersTable = (props) => {
             <TableBody>
               {items.map((customer) => {
                 const isSelected = selected.includes(customer.id);
-                const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
+                //const createdAt = format(customer.createdAt, 'dd/MM/yyyy');
 
                 return (
                   <TableRow
@@ -108,21 +151,27 @@ export const CustomersTable = (props) => {
                           {getInitials(customer.name)}
                         </Avatar>
                         <Typography variant="subtitle2">
-                          {customer.name}
+                          {customer.patient_name}
                         </Typography>
                       </Stack>
                     </TableCell>
                     <TableCell>
-                      {customer.email}
+                      {customer.room_number}
                     </TableCell>
                     <TableCell>
-                      {customer.address.city}, {customer.address.state}, {customer.address.country}
+                      {customer.attending_person_name}
                     </TableCell>
                     <TableCell>
-                      {customer.phone}
+                      {customer.send_timestamp}
                     </TableCell>
                     <TableCell>
-                      {createdAt}
+                      {customer.reply_timestamp}
+                    </TableCell>
+                    <TableCell>
+                      {customer.send_timestamp - customer.reply_timestamp}
+                    </TableCell>
+                    <TableCell>
+                      {customer.admin_comments}
                     </TableCell>
                   </TableRow>
                 );
