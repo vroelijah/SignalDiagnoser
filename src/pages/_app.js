@@ -27,7 +27,7 @@ const App = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>
-          Signal Diagnoser
+          Audilert
         </title>
         <meta
           name="viewport"
